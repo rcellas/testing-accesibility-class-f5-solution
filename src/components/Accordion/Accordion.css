@@ -1,0 +1,93 @@
+/* Estils bàsics per a un acordeó accessible */
+
+.accordion {
+    max-width: 800px;
+    margin: 1.5rem auto;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    color: #222;
+}
+
+.accordion-controls {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    background: #fff;
+}
+
+.accordion-controls li + li {
+    border-top: 1px solid #eee;
+}
+
+.accordion-controls h3 {
+    margin: 0;
+}
+
+/* Botó que actua com a control */
+.accordion-controls button {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 14px 16px;
+    background: transparent;
+    border: none;
+    font-size: 1rem;
+    text-align: left;
+    cursor: pointer;
+    color: inherit;
+}
+
+/* Indicador (+ / −) amb pseudo-element */
+.accordion-controls button::after {
+    content: "+";
+    font-weight: 700;
+    margin-left: 12px;
+    transition: transform 0.2s ease;
+}
+
+/* Quan està expandit, canvia símbol */
+.accordion-controls button[aria-expanded="true"]::after {
+    content: "−";
+}
+
+/* Foco visible per a navegació amb teclat */
+.accordion-controls button:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(21,156,228,0.25);
+    border-radius: 4px;
+}
+
+/* Panell de contingut: ocult per defecte */
+.accordion-controls [aria-hidden="true"] {
+    max-height: 0;
+    overflow: hidden;
+    padding: 0 16px;
+    opacity: 0;
+    transition: max-height 0.28s ease, opacity 0.22s ease, padding 0.22s ease;
+}
+
+/* Quan està visible */
+.accordion-controls [aria-hidden="false"] {
+    max-height: 400px; /* suficient per continguts curts; adaptar si cal */
+    padding: 12px 16px 16px;
+    opacity: 1;
+}
+
+/* Text del contingut */
+.accordion-controls p {
+    margin: 0;
+    line-height: 1.5;
+    color: #444;
+}
+
+/* Respectar preferències de reducció de moviment */
+@media (prefers-reduced-motion: reduce) {
+    .accordion-controls [aria-hidden="true"],
+    .accordion-controls [aria-hidden="false"],
+    .accordion-controls button::after {
+        transition: none;
+    }
+}
