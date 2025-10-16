@@ -1,4 +1,4 @@
-/* Estils amb problemes d'accessibilitat */
+/* Estils accessibles per a l'acordió */
 
 .accordion {
     max-width: 800px;
@@ -25,7 +25,7 @@
     margin: 0;
 }
 
-/* ❌ PROBLEMES: font-size massa petit + color amb poc contrast */
+/* ✅ CORRECTE: font-size adequat + color amb bon contrast */
 .accordion-controls button {
     display: flex;
     align-items: center;
@@ -34,10 +34,10 @@
     padding: 14px 16px;
     background: transparent;
     border: none;
-    font-size: 12px; /* ❌ Massa petit */
+    font-size: 1rem; /* ✅ 16px - mida adequada */
     text-align: left;
     cursor: pointer;
-    color: #aaa; /* ❌ Contrast insuficient */
+    color: inherit; /* ✅ Hereta #222 del contenidor - bon contrast */
 }
 
 .accordion-controls button::after {
@@ -51,10 +51,11 @@
     content: "−";
 }
 
-/* ❌ PROBLEMA: Sense indicador de focus */
+/* ✅ CORRECTE: Indicador de focus visible */
 .accordion-controls button:focus {
-    outline: none; /* ❌ Eliminat */
-    /* ❌ No hi ha box-shadow */
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(21, 156, 228, 0.4); /* ✅ Focus visible blau */
+    border-radius: 4px;
 }
 
 .accordion-controls [aria-hidden="true"] {
@@ -74,7 +75,7 @@
 .accordion-controls p {
     margin: 0;
     line-height: 1.5;
-    color: #bbb; /* ❌ Contrast insuficient */
+    color: #444; /* ✅ Bon contrast amb el fons blanc */
 }
 
 @media (prefers-reduced-motion: reduce) {
