@@ -16,28 +16,17 @@ function Accordion() {
 
     return (
         <div className="accordion">
-            <ul aria-label="Acordeón accesible amb llista" className="accordion-controls">
+            <ul className="accordion-controls">
                 {items.map((item, i) => {
                     const isOpen = openIndex === i
-                    const buttonId = `accordion-control-${i + 1}`
                     return (
                         <li key={item.id}>
                             <h3>
-                                <button
-                                    id={buttonId}
-                                    aria-controls={item.id}
-                                    aria-expanded={isOpen}
-                                    onClick={() => toggle(i)}
-                                >
+                                <button onClick={() => toggle(i)}>
                                     {item.title}
                                 </button>
                             </h3>
-                            <div
-                                id={item.id}
-                                role="region"
-                                aria-labelledby={buttonId}
-                                aria-hidden={!isOpen}
-                            >
+                            <div id={item.id}>
                                 <p>{item.body}</p>
                             </div>
                         </li>
