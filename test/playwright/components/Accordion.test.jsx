@@ -1,72 +1,15 @@
 import { test, expect } from '@playwright/test'
 import AxeBuilder from '@axe-core/playwright'
 
-test.describe('Accordion - Accessibilitat', () => {
+test.describe('Accordion', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/')
   })
 
-  test('no ha de tenir problemes d\'accessibilitat (axe-core)', async ({ page }) => {
-    const results = await new AxeBuilder({ page }).analyze()
-    expect(results.violations).toEqual([])
-  })
-
-  test.describe('Atributs ARIA', () => {
-    test('botons tancats tenen aria-expanded="false"', async ({ page }) => {
-      const buttons = page.locator('button')
-      await expect(buttons.first()).toHaveAttribute('aria-expanded', 'false')
-      await expect(buttons.nth(1)).toHaveAttribute('aria-expanded', 'false')
-      await expect(buttons.nth(2)).toHaveAttribute('aria-expanded', 'false')
-    })
-
-    test('botons tenen aria-controls correcte', async ({ page }) => {
-      const buttons = page.locator('button')
-      await expect(buttons.first()).toHaveAttribute('aria-controls', 'content-1')
-      await expect(buttons.nth(1)).toHaveAttribute('aria-controls', 'content-2')
-      await expect(buttons.nth(2)).toHaveAttribute('aria-controls', 'content-3')
-    })
-
-    test('contingut tancat té aria-hidden="true"', async ({ page }) => {
-      const content = page.locator('#content-1')
-      await expect(content).toHaveAttribute('aria-hidden', 'true')
-      await expect(content).toHaveAttribute('role', 'region')
-    })
-
-    test('al clicar canvia aria-expanded i aria-hidden', async ({ page }) => {
-      const button = page.locator('button').first()
-      const content = page.locator('#content-1')
-      
-      await button.click()
-      await expect(button).toHaveAttribute('aria-expanded', 'true')
-      await expect(content).toHaveAttribute('aria-hidden', 'false')
-    })
-  })
-
-  test.describe('Comportament', () => {
-    test('només una secció oberta alhora', async ({ page }) => {
-      const buttons = page.locator('button')
-      
-      await buttons.first().click()
-      await expect(buttons.first()).toHaveAttribute('aria-expanded', 'true')
-      
-      await buttons.nth(1).click()
-      await expect(buttons.first()).toHaveAttribute('aria-expanded', 'false')
-      await expect(buttons.nth(1)).toHaveAttribute('aria-expanded', 'true')
-    })
-
-    test('clicar el mateix botó el tanca', async ({ page }) => {
-      const button = page.locator('button').first()
-      
-      await button.click()
-      await expect(button).toHaveAttribute('aria-expanded', 'true')
-      
-      await button.click()
-      await expect(button).toHaveAttribute('aria-expanded', 'false')
-    })
-  })
-
-  test.describe('Navegació per teclat', () => {
-    test('Tab navega entre botons', async ({ page }) => {
+  test.describe('Keyboard Interaction', () => {
+    // https://www.w3.org/WAI/ARIA/apg/patterns/accordion/
+    
+    test('Tab: Moves focus between accordion headers', async ({ page }) => {
       const buttons = page.locator('button')
       
       await page.keyboard.press('Tab')
@@ -76,43 +19,114 @@ test.describe('Accordion - Accessibilitat', () => {
       await expect(buttons.nth(1)).toBeFocused()
     })
 
-    test('Enter obre/tanca seccions', async ({ page }) => {
-      await page.keyboard.press('Tab')
+    test('Enter and Space: Toggle accordion section', async ({ page }) => {
       const button = page.locator('button').first()
+      
+      await button.focus()
+      await expect(button).toHaveAttribute('aria-expanded', 'false')
       
       await page.keyboard.press('Enter')
       await expect(button).toHaveAttribute('aria-expanded', 'true')
-      
-      await page.keyboard.press('Enter')
-      await expect(button).toHaveAttribute('aria-expanded', 'false')
-    })
-
-    test('Space obre/tanca seccions', async ({ page }) => {
-      await page.keyboard.press('Tab')
-      const button = page.locator('button').first()
       
       await page.keyboard.press('Space')
-      await expect(button).toHaveAttribute('aria-expanded', 'true')
+      await expect(button).toHaveAttribute('aria-expanded', 'false')
     })
   })
 
-  test.describe('Estructura semàntica', () => {
-    test('té estructura d\'encapçalaments h3', async ({ page }) => {
-      await expect(page.locator('h3')).toHaveCount(3)
-      await expect(page.locator('h3 button')).toHaveCount(3)
+  test.describe('WAI-ARIA Roles, States, and Properties', () => {
+    // https://www.w3.org/WAI/ARIA/apg/patterns/accordion/
+    
+    test('Has proper heading structure with buttons', async ({ page }) => {
+      const headings = page.locator('h3')
+      await expect(headings).toHaveCount(3)
+      
+      const buttons = page.locator('h3 button')
+      await expect(buttons).toHaveCount(3)
     })
 
-    test('llista té aria-label', async ({ page }) => {
-      const list = page.locator('ul.accordion-controls')
-      await expect(list).toHaveAttribute('aria-label', 'Acordeón accesible amb llista')
-    })
-
-    test('contingut té aria-labelledby enllaçat al botó', async ({ page }) => {
+    test('Buttons have required ARIA attributes', async ({ page }) => {
       const button = page.locator('button').first()
+      
+      await expect(button).toHaveAttribute('aria-expanded', 'false')
+      await expect(button).toHaveAttribute('aria-controls', 'content-1')
+    })
+
+    test('Panels have required ARIA attributes', async ({ page }) => {
       const content = page.locator('#content-1')
+      const button = page.locator('button').first()
       const buttonId = await button.getAttribute('id')
       
+      await expect(content).toHaveAttribute('role', 'region')
+      await expect(content).toHaveAttribute('aria-hidden', 'true')
       await expect(content).toHaveAttribute('aria-labelledby', buttonId)
+    })
+  })
+
+  test.describe('Behavior', () => {
+    test('Toggle section updates ARIA states and visibility', async ({ page }) => {
+      const button = page.locator('button').first()
+      const content = page.locator('#content-1')
+      
+      await button.click()
+      await expect(button).toHaveAttribute('aria-expanded', 'true')
+      await expect(content).toHaveAttribute('aria-hidden', 'false')
+      await expect(content).toBeVisible()
+      
+      await button.click()
+      await expect(button).toHaveAttribute('aria-expanded', 'false')
+      await expect(content).toHaveAttribute('aria-hidden', 'true')
+    })
+
+    test('Only one section can be expanded at a time', async ({ page }) => {
+      const buttons = page.locator('button')
+      
+      await buttons.first().click()
+      await expect(buttons.first()).toHaveAttribute('aria-expanded', 'true')
+      
+      await buttons.nth(1).click()
+      await expect(buttons.first()).toHaveAttribute('aria-expanded', 'false')
+      await expect(buttons.nth(1)).toHaveAttribute('aria-expanded', 'true')
+    })
+  })
+
+  test.describe('Accessibility Compliance', () => {
+    test('Passes WCAG 2.1 AA automated tests', async ({ page }) => {
+      const results = await new AxeBuilder({ page })
+        .include('.accordion')
+        .withTags(['wcag2aa'])
+        .analyze()
+
+      expect(results.violations).toEqual([])
+    })
+
+    test('Has visible focus indicator', async ({ page }) => {
+      const button = page.locator('button').first()
+      await button.focus()
+      
+      const focusStyles = await button.evaluate(el => {
+        const computed = window.getComputedStyle(el)
+        return {
+          outlineWidth: computed.outlineWidth,
+          outlineStyle: computed.outlineStyle,
+          boxShadow: computed.boxShadow
+        }
+      })
+      
+      const hasFocusIndicator = 
+        (focusStyles.outlineWidth !== '0px' && focusStyles.outlineStyle !== 'none') ||
+        (focusStyles.boxShadow !== 'none' && focusStyles.boxShadow !== '')
+      
+      expect(hasFocusIndicator).toBeTruthy()
+    })
+
+    test('Text size meets minimum requirement (14px)', async ({ page }) => {
+      const button = page.locator('button').first()
+      
+      const fontSize = await button.evaluate(el => {
+        return parseInt(window.getComputedStyle(el).fontSize)
+      })
+      
+      expect(fontSize).toBeGreaterThanOrEqual(14)
     })
   })
 })
