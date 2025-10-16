@@ -1,4 +1,4 @@
-/* Estils bàsics per a un acordeó accessible */
+/* Estils amb problemes d'accessibilitat */
 
 .accordion {
     max-width: 800px;
@@ -25,7 +25,7 @@
     margin: 0;
 }
 
-/* Botó que actua com a control */
+/* ❌ PROBLEMES: font-size massa petit + color amb poc contrast */
 .accordion-controls button {
     display: flex;
     align-items: center;
@@ -34,13 +34,12 @@
     padding: 14px 16px;
     background: transparent;
     border: none;
-    font-size: 1rem;
+    font-size: 12px; /* ❌ Massa petit */
     text-align: left;
     cursor: pointer;
-    color: inherit;
+    color: #aaa; /* ❌ Contrast insuficient */
 }
 
-/* Indicador (+ / −) amb pseudo-element */
 .accordion-controls button::after {
     content: "+";
     font-weight: 700;
@@ -48,19 +47,16 @@
     transition: transform 0.2s ease;
 }
 
-/* Quan està expandit, canvia símbol */
 .accordion-controls button[aria-expanded="true"]::after {
     content: "−";
 }
 
-/* Foco visible per a navegació amb teclat */
+/* ❌ PROBLEMA: Sense indicador de focus */
 .accordion-controls button:focus {
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(21,156,228,0.25);
-    border-radius: 4px;
+    outline: none; /* ❌ Eliminat */
+    /* ❌ No hi ha box-shadow */
 }
 
-/* Panell de contingut: ocult per defecte */
 .accordion-controls [aria-hidden="true"] {
     max-height: 0;
     overflow: hidden;
@@ -69,21 +65,18 @@
     transition: max-height 0.28s ease, opacity 0.22s ease, padding 0.22s ease;
 }
 
-/* Quan està visible */
 .accordion-controls [aria-hidden="false"] {
-    max-height: 400px; /* suficient per continguts curts; adaptar si cal */
+    max-height: 400px;
     padding: 12px 16px 16px;
     opacity: 1;
 }
 
-/* Text del contingut */
 .accordion-controls p {
     margin: 0;
     line-height: 1.5;
-    color: #444;
+    color: #bbb; /* ❌ Contrast insuficient */
 }
 
-/* Respectar preferències de reducció de moviment */
 @media (prefers-reduced-motion: reduce) {
     .accordion-controls [aria-hidden="true"],
     .accordion-controls [aria-hidden="false"],

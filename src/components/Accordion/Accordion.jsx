@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import './Accordion.css'
-// ...existing code...
+
 function Accordion() {
     const items = [
         { id: 'content-1', title: 'Cabecera 1', body: 'Lorem ipsum dolor sit amet' },
