@@ -1,0 +1,86 @@
+/* Estils amb problemes d'accessibilitat */
+
+.accordion {
+    max-width: 800px;
+    margin: 1.5rem auto;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    color: #222;
+}
+
+.accordion-controls {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    background: #fff;
+}
+
+.accordion-controls li + li {
+    border-top: 1px solid #eee;
+}
+
+.accordion-controls h3 {
+    margin: 0;
+}
+
+/* ❌ PROBLEMES: font-size massa petit + color amb poc contrast */
+.accordion-controls button {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 14px 16px;
+    background: transparent;
+    border: none;
+    font-size: 12px; /* ❌ Massa petit */
+    text-align: left;
+    cursor: pointer;
+    color: #aaa; /* ❌ Contrast insuficient */
+}
+
+.accordion-controls button::after {
+    content: "+";
+    font-weight: 700;
+    margin-left: 12px;
+    transition: transform 0.2s ease;
+}
+
+.accordion-controls button[aria-expanded="true"]::after {
+    content: "−";
+}
+
+/* ❌ PROBLEMA: Sense indicador de focus */
+.accordion-controls button:focus {
+    outline: none; /* ❌ Eliminat */
+    /* ❌ No hi ha box-shadow */
+}
+
+.accordion-controls [aria-hidden="true"] {
+    max-height: 0;
+    overflow: hidden;
+    padding: 0 16px;
+    opacity: 0;
+    transition: max-height 0.28s ease, opacity 0.22s ease, padding 0.22s ease;
+}
+
+.accordion-controls [aria-hidden="false"] {
+    max-height: 400px;
+    padding: 12px 16px 16px;
+    opacity: 1;
+}
+
+.accordion-controls p {
+    margin: 0;
+    line-height: 1.5;
+    color: #bbb; /* ❌ Contrast insuficient */
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .accordion-controls [aria-hidden="true"],
+    .accordion-controls [aria-hidden="false"],
+    .accordion-controls button::after {
+        transition: none;
+    }
+}
